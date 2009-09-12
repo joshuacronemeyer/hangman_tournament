@@ -7,6 +7,7 @@ module UkuleleBoy
     def initialize
       @previous_guesses = []
       @excluded_words = [] #trying to delete words causes error
+      @pruned_for_size = false
     end
 
     # Before starting a game, this method will be called to inform the player of all the possible words that may be
@@ -28,6 +29,7 @@ module UkuleleBoy
     # the word parameter would be "s___s", if you then guess 'o', the next turn it would be "s_o_s", and so on.
     # guesses_left is how many guesses you have left before your player is hung.
     def guess(word, guesses_left)
+      prune_for_size(word.size) unless @pruned_for_size
       guess = @letters.shift
       @previous_guesses << guess
       return guess
@@ -88,6 +90,10 @@ module UkuleleBoy
 
     def recompute_possible_letters
       @letters = order_by_frequency unguessed_letters
+    end
+    
+    def prune_for_size(size)
+      @word_list.each{ |word| @excluded_words << word unless word.size == size }
     end
 
   end

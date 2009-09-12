@@ -25,12 +25,12 @@ describe UkuleleBoy::UkuleleBoy do
     end
   end
 
-  it "should order the letters by frequency" do
-    player = UkuleleBoy::UkuleleBoy.new
-    player.word_list = ["word"]
-    ordered_letters = player.order_by_frequency(['w', 'o', 'r', 'd'])
-    ordered_letters.should == ['o', 'r', 'd', 'w']
-  end
+ # it "should order the letters by frequency" do
+ #   player = UkuleleBoy::UkuleleBoy.new
+ #   player.word_list = ["word"]
+ #   ordered_letters = player.order_by_frequency(['w', 'o', 'r', 'd'])
+ #   ordered_letters.should == ['o', 'r', 'd', 'w']
+ # end
 
   it "should preserve used letters when recomputing letters" do
     player = UkuleleBoy::UkuleleBoy.new
@@ -76,6 +76,22 @@ describe UkuleleBoy::UkuleleBoy do
     "man".scan(/./).each do |letter|
       player.unguessed_letters.should include(letter)
     end
+  end
+
+  it "should prune words for word when all wrong size" do
+    player = UkuleleBoy::UkuleleBoy.new
+    player.word_list = ["man", "boy", "finally"]
+    player.new_game(6)
+    player.guess("____", 4)
+    player.remaining_words.should == []
+  end
+
+  it "should prune words for word size when some are right" do
+    player = UkuleleBoy::UkuleleBoy.new
+    player.word_list = ["man", "boy", "finally"]
+    player.new_game(6)
+    player.guess("___", 4)
+    player.remaining_words.should == ["boy", "man"]
   end
 
 end
