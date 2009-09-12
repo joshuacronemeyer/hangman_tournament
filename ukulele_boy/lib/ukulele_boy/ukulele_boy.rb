@@ -30,6 +30,7 @@ module UkuleleBoy
     # guesses_left is how many guesses you have left before your player is hung.
     def guess(word, guesses_left)
       prune_for_size(word.size) unless @pruned_for_size
+      prune_for_position(word)
       guess = @letters.shift
       @previous_guesses << guess
       return guess
@@ -94,6 +95,17 @@ module UkuleleBoy
     
     def prune_for_size(size)
       @word_list.each{ |word| @excluded_words << word unless word.size == size }
+      recompute_possible_letters
+    end
+
+    def prune_for_position(word)
+      words = remaining_words
+      word.scan(/./).each_with_index do |letter, index|
+        next if letter == "_"
+        words.each do |remaining_word|
+          @excluded_words << remaining_word if letter != remaining_word[index, index+1][0,1]
+        end
+      end
     end
 
   end

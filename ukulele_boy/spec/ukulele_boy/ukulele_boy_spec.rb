@@ -94,4 +94,28 @@ describe UkuleleBoy::UkuleleBoy do
     player.remaining_words.should == ["boy", "man"]
   end
 
+  it "should prune all words when none match letter position" do
+    player = UkuleleBoy::UkuleleBoy.new
+    player.word_list = ["man", "boy", "sim"]
+    player.new_game(6)
+    player.guess("__x", 4)
+    player.remaining_words.should == []
+  end
+
+  it "should prune no words when all match letter position" do
+    player = UkuleleBoy::UkuleleBoy.new
+    player.word_list = ["man", "can", "tan"]
+    player.new_game(6)
+    player.guess("_an", 4)
+    player.remaining_words.should == ["tan", "man", "can"]
+  end
+
+  it "should prune some words when some match letter position" do
+    player = UkuleleBoy::UkuleleBoy.new
+    player.word_list = ["man", "foo", "tan"]
+    player.new_game(6)
+    player.guess("f__", 4)
+    player.remaining_words.should == ["foo"]
+  end
+
 end
