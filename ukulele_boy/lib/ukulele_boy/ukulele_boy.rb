@@ -31,7 +31,7 @@ module UkuleleBoy
     def guess(word, guesses_left)
       prune_for_size(word.size) unless @pruned_for_size
       prune_for_position(word)
-      guess = @letters.shift
+      guess = recompute_possible_letters.shift
       @previous_guesses << guess
       return guess
     end
@@ -39,13 +39,13 @@ module UkuleleBoy
     # notifies you that your last guess was incorrect, and passes your guess back to the method
     def incorrect_guess(guess)
       @word_list.each{ |word| @excluded_words << word if word.include? guess }
-      recompute_possible_letters
+      #recompute_possible_letters
     end
 
     # notifies you that your last guess was correct, and passes your guess back to the method
     def correct_guess(guess)
       @word_list.each{ |word| @excluded_words << word unless word.include? guess }
-      recompute_possible_letters
+      #recompute_possible_letters
     end
 
     # you lost the game.  The reason is in the reason parameter
@@ -82,12 +82,11 @@ module UkuleleBoy
     end
 
     def recompute_possible_letters
-      @letters = order_by_frequency unguessed_letters
+      return order_by_frequency unguessed_letters
     end
     
     def prune_for_size(size)
       @word_list.each{ |word| @excluded_words << word unless word.size == size }
-      recompute_possible_letters
     end
 
     def prune_for_position(word)
