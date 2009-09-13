@@ -60,9 +60,7 @@ module UkuleleBoy
 
     def all_letters_in_word_list
       letter_set = Set.new
-      remaining_words.each do |word|
-        word.scan(/./).each { |a| letter_set << a }
-      end
+      remaining_words.each{ |word| letter_set.merge(word.scan(/./)) }
       return letter_set.to_a
     end
 
