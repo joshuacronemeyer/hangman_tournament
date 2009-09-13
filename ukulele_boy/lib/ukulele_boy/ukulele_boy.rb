@@ -21,6 +21,7 @@ module UkuleleBoy
     def new_game(guesses_left)
       @previous_guesses = []
       @excluded_words = []
+      @pruned_for_size = false
       recompute_possible_letters
     end
 
@@ -77,16 +78,9 @@ module UkuleleBoy
 
     def order_by_frequency(letters)
       most_frequent_letters = ['e', 't', 'a', 'o', 'i', 'n', 's', 'r', 'h', 'l', 'd', 'c']
-  
-      unordered = letters
-      ordered = []
-      most_frequent_letters.each do |letter|
-        if unordered.include?(letter)
-          unordered.delete(letter)
-          ordered << letter
-        end
-      end
-      return ordered + unordered
+      most_frequent_letters.delete_if { |letter| !letters.include?(letter) }
+      letters.delete_if { |letter| most_frequent_letters.include?(letter) }
+      return most_frequent_letters + letters
     end
 
     def recompute_possible_letters
