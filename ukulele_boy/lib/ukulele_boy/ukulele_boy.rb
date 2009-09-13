@@ -22,7 +22,6 @@ module UkuleleBoy
       @previous_guesses = []
       @excluded_words = []
       @pruned_for_size = false
-      recompute_possible_letters
     end
 
     # Each turn your player must make a guess.  The word will be a bunch of underscores, one for each letter in the word.
