@@ -6,21 +6,20 @@ module UkuleleBoy
     # The player will only be instantiated once, and will play many games.
     def initialize
       @previous_guesses = []
-      @excluded_words = [] #trying to delete words causes error
       @pruned_for_size = false
     end
 
     # Before starting a game, this method will be called to inform the player of all the possible words that may be
     # played.
     def word_list=(list)
-      @word_list = list
+      @original_word_list = Array.new(list)
     end
 
     # a new game has started.  The number of guesses the player has left is passed in (default 6),
     # in case you want to keep track of it.
     def new_game(guesses_left)
+      @word_list = Array.new(@original_word_list)
       @previous_guesses = []
-      @excluded_words = []
       @pruned_for_size = false
     end
 
@@ -38,14 +37,12 @@ module UkuleleBoy
 
     # notifies you that your last guess was incorrect, and passes your guess back to the method
     def incorrect_guess(guess)
-      @word_list.each{ |word| @excluded_words << word if word.include? guess }
-      #recompute_possible_letters
+      @word_list.delete_if{ |word| word.include? guess }
     end
 
     # notifies you that your last guess was correct, and passes your guess back to the method
     def correct_guess(guess)
-      @word_list.each{ |word| @excluded_words << word unless word.include? guess }
-      #recompute_possible_letters
+      @word_list.delete_if{ |word| !word.include? guess }
     end
 
     # you lost the game.  The reason is in the reason parameter
@@ -70,7 +67,7 @@ module UkuleleBoy
     end
 
     def remaining_words
-      return Set.new(@word_list).subtract(@excluded_words).to_a
+      return @word_list
     end
 
     #private
@@ -86,21 +83,18 @@ module UkuleleBoy
     end
     
     def prune_for_size(size)
-      @word_list.each{ |word| @excluded_words << word unless word.size == size }
+      @word_list.delete_if{ |word| word.size != size }
     end
 
     def prune_for_position(word)
-      words = remaining_words
       word.scan(/./).each_with_index do |letter, index|
         next if letter == "_"
-        exclude_for_wrong_letter(letter, index, words)
+        exclude_for_wrong_letter(letter, index)
       end
     end
 
-    def exclude_for_wrong_letter(letter, index, words)
-      words.each do |remaining_word|
-        @excluded_words << remaining_word if letter != remaining_word[index, index+1][0,1]
-      end
+    def exclude_for_wrong_letter(letter, index)
+      @word_list.delete_if{ |word| letter != word[index, index+1][0,1]}
     end
 
   end

@@ -20,6 +20,7 @@ describe UkuleleBoy::UkuleleBoy do
   it "should know the set of possible letters" do
     player = UkuleleBoy::UkuleleBoy.new
     player.word_list = ["word"]
+    player.new_game(6)
     "word".scan(/./).each do |letter|
       player.all_letters_in_word_list.should include(letter)
     end
@@ -28,6 +29,7 @@ describe UkuleleBoy::UkuleleBoy do
   it "should order the letters by frequency" do
     player = UkuleleBoy::UkuleleBoy.new
     player.word_list = ["word"]
+    player.new_game(6)
     ordered_letters = player.order_by_frequency(['w', 'o', 'r', 'd'])
     ordered_letters.should == ['o', 'r', 'd', 'w']
   end
@@ -45,6 +47,7 @@ describe UkuleleBoy::UkuleleBoy do
   it "selecting a correctly should make boy impossible" do
     player = UkuleleBoy::UkuleleBoy.new
     player.word_list = ["man", "boy"]
+    player.new_game(6)
     player.correct_guess("a")
     "boy".scan(/./).each do |letter|
       player.unguessed_letters.should_not include(letter)
@@ -54,6 +57,7 @@ describe UkuleleBoy::UkuleleBoy do
   it "selecting o correctly should make man impossible" do
     player = UkuleleBoy::UkuleleBoy.new
     player.word_list = ["man", "boy"]
+    player.new_game(6)
     player.correct_guess("o")
     "man".scan(/./).each do |letter|
       player.unguessed_letters.should_not include(letter)
@@ -63,6 +67,7 @@ describe UkuleleBoy::UkuleleBoy do
   it "selecting a incorrectly should make man impossible" do
     player = UkuleleBoy::UkuleleBoy.new
     player.word_list = ["man", "boy"]
+    player.new_game(6)
     player.incorrect_guess("a")
     "boy".scan(/./).each do |letter|
       player.unguessed_letters.should include(letter)
@@ -72,6 +77,7 @@ describe UkuleleBoy::UkuleleBoy do
   it "selecting o incorrectly should make man impossible" do
     player = UkuleleBoy::UkuleleBoy.new
     player.word_list = ["man", "boy"]
+    player.new_game(6)
     player.incorrect_guess("o")
     "man".scan(/./).each do |letter|
       player.unguessed_letters.should include(letter)
@@ -91,7 +97,7 @@ describe UkuleleBoy::UkuleleBoy do
     player.word_list = ["man", "boy", "finally"]
     player.new_game(6)
     player.guess("___", 4)
-    player.remaining_words.should == ["boy", "man"]
+    player.remaining_words.should == ["man", "boy"]
   end
 
   it "should prune all words when none match letter position" do
@@ -107,7 +113,7 @@ describe UkuleleBoy::UkuleleBoy do
     player.word_list = ["man", "can", "tan"]
     player.new_game(6)
     player.guess("_an", 4)
-    player.remaining_words.should == ["tan", "man", "can"]
+    player.remaining_words.should == ["man", "can", "tan"]
   end
 
   it "should prune some words when some match letter position" do
