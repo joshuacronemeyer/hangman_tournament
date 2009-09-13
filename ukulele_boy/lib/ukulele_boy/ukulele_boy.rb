@@ -74,6 +74,7 @@ module UkuleleBoy
       return Set.new(@word_list).subtract(@excluded_words).to_a
     end
 
+    #private
     def order_by_frequency(letters)
       most_frequent_letters = ['e', 't', 'a', 'o', 'i', 'n', 's', 'r', 'h', 'l', 'd', 'c']
       most_frequent_letters.delete_if { |letter| !letters.include?(letter) }
