@@ -25,12 +25,12 @@ describe UkuleleBoy::UkuleleBoy do
     end
   end
 
- # it "should order the letters by frequency" do
- #   player = UkuleleBoy::UkuleleBoy.new
- #   player.word_list = ["word"]
- #   ordered_letters = player.order_by_frequency(['w', 'o', 'r', 'd'])
- #   ordered_letters.should == ['o', 'r', 'd', 'w']
- # end
+  it "should order the letters by frequency" do
+    player = UkuleleBoy::UkuleleBoy.new
+    player.word_list = ["word"]
+    ordered_letters = player.order_by_frequency(['w', 'o', 'r', 'd'])
+    ordered_letters.should == ['o', 'r', 'd', 'w']
+  end
 
   it "should preserve used letters when recomputing letters" do
     player = UkuleleBoy::UkuleleBoy.new

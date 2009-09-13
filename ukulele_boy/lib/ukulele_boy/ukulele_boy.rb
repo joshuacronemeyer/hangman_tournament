@@ -94,9 +94,13 @@ module UkuleleBoy
       words = remaining_words
       word.scan(/./).each_with_index do |letter, index|
         next if letter == "_"
-        words.each do |remaining_word|
-          @excluded_words << remaining_word if letter != remaining_word[index, index+1][0,1]
-        end
+        exclude_for_wrong_letter(letter, index, words)
+      end
+    end
+
+    def exclude_for_wrong_letter(letter, index, words)
+      words.each do |remaining_word|
+        @excluded_words << remaining_word if letter != remaining_word[index, index+1][0,1]
       end
     end
 
