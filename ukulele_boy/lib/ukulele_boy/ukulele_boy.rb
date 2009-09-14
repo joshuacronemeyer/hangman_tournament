@@ -2,9 +2,6 @@ require 'set'
 module UkuleleBoy
   class UkuleleBoy
     attr_reader :word_list
-    
-    def initialize
-    end
 
     def word_list=(list)
       @original_word_list = Array.new(list)
@@ -44,9 +41,7 @@ module UkuleleBoy
     end
 
     def unguessed_letters
-      remaining_letters = all_letters_in_word_list
-      @previous_guesses.each{ |letter| remaining_letters.delete(letter) }
-      return remaining_letters
+      Set.new(all_letters_in_word_list).subtract(@previous_guesses).to_a
     end
 
     def order_by_frequency(letters)
