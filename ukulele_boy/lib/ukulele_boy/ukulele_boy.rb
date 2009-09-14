@@ -2,6 +2,7 @@ require 'set'
 
 module UkuleleBoy
   class UkuleleBoy
+    attr_reader :word_list
     # You may initialize you player but the the initialize method must take NO paramters.
     # The player will only be instantiated once, and will play many games.
     def initialize
@@ -28,9 +29,8 @@ module UkuleleBoy
     # the word parameter would be "s___s", if you then guess 'o', the next turn it would be "s_o_s", and so on.
     # guesses_left is how many guesses you have left before your player is hung.
     def guess(word, guesses_left)
-      prune_for_size(word.size) unless @pruned_for_size
-      prune_for_position(word)
-      guess = recompute_possible_letters.shift
+      prune_word_list(word)
+      guess = letters.shift
       @previous_guesses << guess
       return guess
     end
@@ -56,7 +56,7 @@ module UkuleleBoy
 
     def all_letters_in_word_list
       letter_set = Set.new
-      remaining_words.each{ |word| letter_set.merge(word.scan(/./)) }
+      @word_list.each{ |word| letter_set.merge(word.scan(/./)) }
       return letter_set.to_a
     end
 
@@ -64,10 +64,6 @@ module UkuleleBoy
       remaining_letters = all_letters_in_word_list
       @previous_guesses.each{ |letter| remaining_letters.delete(letter) }
       return remaining_letters
-    end
-
-    def remaining_words
-      return @word_list
     end
 
     #private
@@ -78,7 +74,7 @@ module UkuleleBoy
       return most_frequent_letters + letters
     end
 
-    def recompute_possible_letters
+    def letters
       return order_by_frequency unguessed_letters
     end
     
@@ -91,6 +87,11 @@ module UkuleleBoy
         next if letter == "_"
         exclude_for_wrong_letter(letter, index)
       end
+    end
+
+    def prune_word_list(word)
+      prune_for_size(word.size) unless @pruned_for_size
+      prune_for_position(word)
     end
 
     def exclude_for_wrong_letter(letter, index)

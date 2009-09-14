@@ -13,7 +13,7 @@ describe UkuleleBoy::UkuleleBoy do
     player.new_game(6)
     player.guess("____", 6)
     player.new_game(6)
-    player.remaining_words.size.should == 2
+    player.word_list.size.should == 2
     player.unguessed_letters.size.should == 6
   end
 
@@ -34,12 +34,12 @@ describe UkuleleBoy::UkuleleBoy do
     ordered_letters.should == ['o', 'r', 'd', 'w']
   end
 
-  it "should preserve used letters when recomputing letters" do
+  it "should make unguessed letters list smaller with each guess" do
     player = UkuleleBoy::UkuleleBoy.new
     player.word_list = ["word"]
     player.new_game(6)
     player.guess("____", 6)
-    player.recompute_possible_letters
+    player.letters
     player.unguessed_letters.size.should == 3
   end
 
@@ -89,7 +89,7 @@ describe UkuleleBoy::UkuleleBoy do
     player.word_list = ["man", "boy", "finally"]
     player.new_game(6)
     player.guess("____", 4)
-    player.remaining_words.should == []
+    player.word_list.should == []
   end
 
   it "should prune words for word size when some are right" do
@@ -97,7 +97,7 @@ describe UkuleleBoy::UkuleleBoy do
     player.word_list = ["man", "boy", "finally"]
     player.new_game(6)
     player.guess("___", 4)
-    player.remaining_words.should == ["man", "boy"]
+    player.word_list.should == ["man", "boy"]
   end
 
   it "should prune all words when none match letter position" do
@@ -105,7 +105,7 @@ describe UkuleleBoy::UkuleleBoy do
     player.word_list = ["man", "boy", "sim"]
     player.new_game(6)
     player.guess("__x", 4)
-    player.remaining_words.should == []
+    player.word_list.should == []
   end
 
   it "should prune no words when all match letter position" do
@@ -113,7 +113,7 @@ describe UkuleleBoy::UkuleleBoy do
     player.word_list = ["man", "can", "tan"]
     player.new_game(6)
     player.guess("_an", 4)
-    player.remaining_words.should == ["man", "can", "tan"]
+    player.word_list.should == ["man", "can", "tan"]
   end
 
   it "should prune some words when some match letter position" do
@@ -121,7 +121,7 @@ describe UkuleleBoy::UkuleleBoy do
     player.word_list = ["man", "foo", "tan"]
     player.new_game(6)
     player.guess("f__", 4)
-    player.remaining_words.should == ["foo"]
+    player.word_list.should == ["foo"]
   end
 
 end
