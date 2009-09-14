@@ -95,7 +95,7 @@ module UkuleleBoy
     end
 
     def exclude_for_wrong_letter(letter, index)
-      @word_list.delete_if{ |word| letter != word[index, index+1][0,1]}
+      @word_list.delete_if{ |word| letter != word[index, 1]}
     end
 
   end
