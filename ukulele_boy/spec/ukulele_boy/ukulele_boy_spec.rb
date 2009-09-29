@@ -14,24 +14,15 @@ describe UkuleleBoy::UkuleleBoy do
     player.guess("____", 6)
     player.new_game(6)
     player.word_list.size.should == 2
-    player.unguessed_letters.size.should == 6
+    player.unguessed_letters.size.should == 26
   end
 
   it "should know the set of possible letters" do
     player = UkuleleBoy::UkuleleBoy.new
     player.word_list = ["word"]
     player.new_game(6)
-    "word".scan(/./).each do |letter|
-      player.all_letters_in_word_list.should include(letter)
-    end
-  end
-
-  it "should order the letters by frequency" do
-    player = UkuleleBoy::UkuleleBoy.new
-    player.word_list = ["word"]
-    player.new_game(6)
-    ordered_letters = player.order_by_frequency(['w', 'o', 'r', 'd'])
-    ordered_letters.should == ['o', 'r', 'd', 'w']
+    player.guess("____", 6)
+    player.unguessed_letters.should == ["r", "d", "w"]
   end
 
   it "should make unguessed letters list smaller with each guess" do
@@ -39,52 +30,42 @@ describe UkuleleBoy::UkuleleBoy do
     player.word_list = ["word"]
     player.new_game(6)
     player.guess("____", 6)
-    player.letters
     player.unguessed_letters.size.should == 3
   end
 
-
-  it "selecting a correctly should make boy impossible" do
+  it "guessing o should make man impossible" do
     player = UkuleleBoy::UkuleleBoy.new
     player.word_list = ["man", "boy"]
     player.new_game(6)
-    player.correct_guess("a")
-    "boy".scan(/./).each do |letter|
-      player.unguessed_letters.should_not include(letter)
-    end
+    player.guess("_o_", 5)
+    player.word_list.should == ["boy"]
   end
 
-  it "selecting o correctly should make man impossible" do
+  it "guessing a incorrectly should make man impossible" do
     player = UkuleleBoy::UkuleleBoy.new
     player.word_list = ["man", "boy"]
     player.new_game(6)
-    player.correct_guess("o")
-    "man".scan(/./).each do |letter|
-      player.unguessed_letters.should_not include(letter)
-    end
+    guess = player.guess("___", 5)
+    guess.should == "a"
+    player.incorrect_guess(guess)
+    player.word_list.should == ["boy"]
   end
 
-  it "selecting a incorrectly should make man impossible" do
+  it "should guess letters according to frequency used" do
     player = UkuleleBoy::UkuleleBoy.new
-    player.word_list = ["man", "boy"]
+    player.word_list = ["et", "qz"]
     player.new_game(6)
-    player.incorrect_guess("a")
-    "boy".scan(/./).each do |letter|
-      player.unguessed_letters.should include(letter)
-    end
+    guess = player.guess("__", 5)
+    guess.should == "e"
+    player.incorrect_guess(guess)
+    guess = player.guess("__", 4)
+    guess.should == "q"
+    player.correct_guess(guess)
+    guess = player.guess("q_", 4)
+    guess.should == "z"
   end
 
-  it "selecting o incorrectly should make man impossible" do
-    player = UkuleleBoy::UkuleleBoy.new
-    player.word_list = ["man", "boy"]
-    player.new_game(6)
-    player.incorrect_guess("o")
-    "man".scan(/./).each do |letter|
-      player.unguessed_letters.should include(letter)
-    end
-  end
-
-  it "should prune words for word when all wrong size" do
+  it "should prune all words when all wrong size" do
     player = UkuleleBoy::UkuleleBoy.new
     player.word_list = ["man", "boy", "finally"]
     player.new_game(6)

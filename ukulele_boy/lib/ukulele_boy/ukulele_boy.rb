@@ -2,6 +2,7 @@ require 'set'
 module UkuleleBoy
   class UkuleleBoy
     attr_reader :word_list
+    attr_reader :unguessed_letters
 
     def word_list=(list)
       @original_word_list = Array.new(list)
@@ -9,15 +10,14 @@ module UkuleleBoy
 
     def new_game(guesses_left)
       @word_list = Array.new(@original_word_list)
-      @previous_guesses = []
+      @unguessed_letters = ['e', 't', 'a', 'o', 'i', 'n', 's', 'r', 'h', 'l', 'd', 'c', 'u', 'm', 'w', 'f', 'g', 'y', 'p', 'b', 'v', 'k', 'j', 'x', 'q', 'z']
       @pruned_for_size = false
     end
 
     def guess(word, guesses_left)
       prune_word_list(word)
-      guess = letters.shift
-      @previous_guesses << guess
-      return guess
+      prune_letters_not_in_word_list
+      return @unguessed_letters.shift
     end
 
     def incorrect_guess(guess)
@@ -25,7 +25,6 @@ module UkuleleBoy
     end
 
     def correct_guess(guess)
-      @word_list.delete_if{ |word| !word.include? guess }
     end
 
     def fail(reason)
@@ -34,34 +33,22 @@ module UkuleleBoy
     def game_result(result, word)
     end
 
+    def prune_letters_not_in_word_list
+      (Set.new(@unguessed_letters) - all_letters_in_word_list).each{ |letter| @unguessed_letters.delete(letter) }
+    end
+
     def all_letters_in_word_list
       letter_set = Set.new
       @word_list.each{ |word| letter_set.merge(word.scan(/./)) }
-      return letter_set.to_a
+      return letter_set
     end
 
-    def unguessed_letters
-      Set.new(all_letters_in_word_list).subtract(@previous_guesses).to_a
-    end
-
-    def order_by_frequency(letters)
-      most_frequent_letters = ['e', 't', 'a', 'o', 'i', 'n', 's', 'r', 'h', 'l', 'd', 'c']
-      most_frequent_letters.delete_if { |letter| !letters.include?(letter) }
-      letters.delete_if { |letter| most_frequent_letters.include?(letter) }
-      return most_frequent_letters + letters
-    end
-
-    def letters
-      return order_by_frequency unguessed_letters
-    end
-    
     def prune_for_size(size)
       @word_list.delete_if{ |word| word.size != size }
     end
 
     def prune_for_structure(word)
       word.scan(/./).each_with_index do |letter, index|
-        next if letter == "_"
         exclude_words_with_wrong_letter_structure(letter, index)
       end
     end
@@ -72,7 +59,7 @@ module UkuleleBoy
     end
 
     def exclude_words_with_wrong_letter_structure(letter, index)
-      @word_list.delete_if{ |word| letter != word[index, 1]}
+      @word_list.delete_if{ |word| letter != "_" && letter != word[index, 1]}
     end
   end
 end
