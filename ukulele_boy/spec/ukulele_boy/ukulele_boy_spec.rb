@@ -13,7 +13,7 @@ describe UkuleleBoy::UkuleleBoy do
     player.new_game(6)
     player.guess("____", 6)
     player.new_game(6)
-    player.word_list.size.should == 2
+    player.pruned_word_list.size.should == 2
     player.unguessed_letters.size.should == 26
   end
 
@@ -38,7 +38,7 @@ describe UkuleleBoy::UkuleleBoy do
     player.word_list = ["man", "boy"]
     player.new_game(6)
     player.guess("_o_", 5)
-    player.word_list.should == ["boy"]
+    player.pruned_word_list.should == ["boy"]
   end
 
   it "guessing a incorrectly should make man impossible" do
@@ -48,7 +48,7 @@ describe UkuleleBoy::UkuleleBoy do
     guess = player.guess("___", 5)
     guess.should == "a"
     player.incorrect_guess(guess)
-    player.word_list.should == ["boy"]
+    player.pruned_word_list.should == ["boy"]
   end
 
   it "should guess letters according to frequency used" do
@@ -70,7 +70,7 @@ describe UkuleleBoy::UkuleleBoy do
     player.word_list = ["man", "boy", "finally"]
     player.new_game(6)
     player.guess("____", 4)
-    player.word_list.should == []
+    player.pruned_word_list.should == []
   end
 
   it "should prune words for word size when some are right" do
@@ -78,7 +78,7 @@ describe UkuleleBoy::UkuleleBoy do
     player.word_list = ["man", "boy", "finally"]
     player.new_game(6)
     player.guess("___", 4)
-    player.word_list.should == ["man", "boy"]
+    player.pruned_word_list.should == ["man", "boy"]
   end
 
   it "should prune all words when none match letter position" do
@@ -86,7 +86,7 @@ describe UkuleleBoy::UkuleleBoy do
     player.word_list = ["man", "boy", "sim"]
     player.new_game(6)
     player.guess("__x", 4)
-    player.word_list.should == []
+    player.pruned_word_list.should == []
   end
 
   it "should prune no words when all match letter position" do
@@ -94,7 +94,7 @@ describe UkuleleBoy::UkuleleBoy do
     player.word_list = ["man", "can", "tan"]
     player.new_game(6)
     player.guess("_an", 4)
-    player.word_list.should == ["man", "can", "tan"]
+    player.pruned_word_list.should == ["man", "can", "tan"]
   end
 
   it "should prune some words when some match letter position" do
@@ -102,7 +102,7 @@ describe UkuleleBoy::UkuleleBoy do
     player.word_list = ["man", "foo", "tan"]
     player.new_game(6)
     player.guess("f__", 4)
-    player.word_list.should == ["foo"]
+    player.pruned_word_list.should == ["foo"]
   end
 
 end

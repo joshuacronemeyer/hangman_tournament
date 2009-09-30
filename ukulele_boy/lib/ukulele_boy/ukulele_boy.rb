@@ -1,17 +1,11 @@
 require 'set'
 module UkuleleBoy
   class UkuleleBoy
-    attr_reader :word_list
-    attr_reader :unguessed_letters
-
-    def word_list=(list)
-      @original_word_list = Array.new(list)
-    end
+    attr_accessor :word_list, :unguessed_letters, :pruned_word_list
 
     def new_game(guesses_left)
-      @word_list = Array.new(@original_word_list)
+      @pruned_word_list = Array.new(@word_list)
       @unguessed_letters = ['e', 't', 'a', 'o', 'i', 'n', 's', 'r', 'h', 'l', 'd', 'c', 'u', 'm', 'w', 'f', 'g', 'y', 'p', 'b', 'v', 'k', 'j', 'x', 'q', 'z']
-      @pruned_for_size = false
     end
 
     def guess(word, guesses_left)
@@ -21,7 +15,7 @@ module UkuleleBoy
     end
 
     def incorrect_guess(guess)
-      @word_list.delete_if{ |word| word.include? guess }
+      @pruned_word_list.delete_if{ |word| word.include? guess }
     end
 
     def correct_guess(guess)
@@ -39,27 +33,25 @@ module UkuleleBoy
 
     def all_letters_in_word_list
       letter_set = Set.new
-      @word_list.each{ |word| letter_set.merge(word.scan(/./)) }
+      @pruned_word_list.each{ |word| letter_set.merge(word.scan(/./)) }
       return letter_set
     end
 
     def prune_for_size(size)
-      @word_list.delete_if{ |word| word.size != size }
+      @pruned_word_list.delete_if{ |word| word.size != size }
     end
 
     def prune_for_structure(word)
-      word.scan(/./).each_with_index do |letter, index|
-        exclude_words_with_wrong_letter_structure(letter, index)
-      end
+      word.scan(/./).each_with_index { |letter, index| exclude_words_with_wrong_letter_structure(letter, index) }
     end
 
     def prune_word_list(word)
-      prune_for_size(word.size) unless @pruned_for_size
+      prune_for_size(word.size)
       prune_for_structure(word)
     end
 
     def exclude_words_with_wrong_letter_structure(letter, index)
-      @word_list.delete_if{ |word| letter != "_" && letter != word[index, 1]}
+      @pruned_word_list.delete_if{ |word| letter != "_" && letter != word[index, 1] }
     end
   end
 end
